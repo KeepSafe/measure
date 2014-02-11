@@ -17,10 +17,7 @@
 ;; Measure is a library that enables Clojure programs to track critical aspects of
 ;; their behavior.  Using idiomatic wrappers around Coda Hale's excellent
 ;; [Metrics][http://metrics.codahale.com] library, one can measure statistics from
-;; simple counters to
-;; exponentially-decaying histograms.
-;;
-;; 
+;; simple counters to exponentially-decaying histograms.
 
 (ns measure.core
   {}
@@ -43,8 +40,10 @@
 
 ;; The core construct of measure is the registry.  To be useful, all
 ;; metrics are registered with a registry, which is typically a singleton.
-;; 
 ;;
+;; The registry is a collection of named metrics.  Registries are useful both
+;; to group related sets of measurements, and as the vehicle through which
+;; measurements are reported.
 
 (defn registry
   "Creates and returns a new metrics registry."
@@ -68,10 +67,14 @@
 
 ;; Gauges can wrap either a function that returns a value or an atom.
 (defn atom?
+  "Returns true if the given value is an atom."
   [maybe-atom]
   (instance? clojure.lang.Atom maybe-atom))
 
 (defn atom-or-fn
+  "If the value is an atom, returns a no-arg function that derefs it.
+   If the value is a function, it is returned unmodified.
+   Otherwise, an exception is thrown."
   [val]
   (cond (atom? val) (fn [] @val)
         (fn? val) val
@@ -249,17 +252,23 @@
   Timer
   (value [t] (.getCount t)))
 
+;; Some metrics (histograms, meters, and timers) provide non-scalar information, and `value` is
+;; insufficient for these types.  Meters expose rates, histograms expose distribution snapshots,
+;; and timers expose both.
+
 (defn rates
-  [^Metered metric]
-  {:count (.getCount metric)
-   :15-minute-rate (.getFifteenMinuteRate metric)
-   :5-minute-rate (.getFiveMinuteRate metric)
-   :1-minute-rate (.getOneMinuteRate metric)
-   :mean-rate (.getMeanRate metric)})
+  "Gets the current rate of events for the given measurement."
+  [^Metered meter-or-timer]
+  {:count (.getCount meter-or-timer)
+   :15-minute-rate (.getFifteenMinuteRate meter-or-timer)
+   :5-minute-rate (.getFiveMinuteRate meter-or-timer)
+   :1-minute-rate (.getOneMinuteRate meter-or-timer)
+   :mean-rate (.getMeanRate meter-or-timer)})
 
 (defn snapshot
-  [^Sampling metric]
-  (let [s (.getSnapshot metric)]
+  "Gets a snapshot of the current distribution for the given measurement."
+  [^Sampling histogram-or-timer]
+  (let [s (.getSnapshot histogram-or-timer)]
     {:size (.size s)
      :min (.getMin s)
      :max (.getMax s)
