@@ -1,8 +1,8 @@
 (defproject measure "0.1.0-SNAPSHOT"
   :description "Say things about your application with authority, using Coda Hale's Metrics."
-  :url "https://github.com/benjamin-bader/measure"
+  :url "https://github.com/KeepSafe/measure"
   :scm {:name "git"
-        :url "https://github.com/benjamin-bader/measure"}
+        :url "https://github.com/KeepSafe/measure"}
   :license {:name "Apache License, Version 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
@@ -15,4 +15,10 @@
   :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
                              :releases {:checksum :fail :update :always}}}
+
+  :pom-addition [:developers [:developer
+                              [:name "Ben Bader"]
+                              [:url "http://getkeepsafe.com"]
+                              [:email "ben@getkeepsafe.com"]
+                              [:timezome "-8"]]]
 )
