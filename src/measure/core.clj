@@ -51,11 +51,11 @@
   (MetricRegistry.))
 
 (defn register
-  [registry name metric]
+  [^MetricRegistry registry name metric]
   (.register registry name metric)
   metric)
 
-(deftype ^:private FnGauge [^Callable value-fn]
+(deftype ^:private FnGauge [value-fn]
   Gauge
   (getValue [_] (value-fn)))
 
