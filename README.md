@@ -2,7 +2,7 @@
 
 Measure is a library that enables Clojure programs to track all aspects of their performance.  Using idiomatic wrappers around Coda Hale's excellent [Metrics][0] library, developers can measure things from simple values to weighted histograms over time.
 
-You can't optimize what you can't measure; `measure` makes it easy to know what needs optimizing.
+You can't optimize what you don't measure; `measure` makes it easy to know what needs optimizing.
 
 ## Usage
 
