@@ -7,8 +7,8 @@ You can't optimize what you can't measure; `measure` makes it easy to know what 
 ## Usage
 
 Add this to your Leiningen project's dependencies:
-```
-[measure "0.1.0-SNAPSHOT"]
+```clojure
+[measure "0.1.2"]
 ```
 
 Then, measure all the things:

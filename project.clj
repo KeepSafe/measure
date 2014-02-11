@@ -1,4 +1,4 @@
-(defproject measure "0.1.0"
+(defproject measure "0.1.2"
   :description "Say things about your application with authority, using Coda Hale's Metrics."
   :url "https://github.com/KeepSafe/measure"
   :scm {:name "git"
@@ -16,9 +16,13 @@
                              :snapshots false
                              :releases {:checksum :fail :update :always}}}
 
+  :signing {:gpg-key "ben@getkeepsafe.com"}
+
+  :deploy-repositories [["clojars" {:creds :gpg}]]
+
   :pom-addition [:developers [:developer
                               [:name "Ben Bader"]
                               [:url "http://getkeepsafe.com"]
                               [:email "ben@getkeepsafe.com"]
-                              [:timezome "-8"]]]
+                              [:timezone "America/Los Angeles"]]]
 )
