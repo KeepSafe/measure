@@ -138,7 +138,7 @@ To expose the sampled distribution recorded, histograms support the `snapshot` f
 (snapshot my-histogram) ; => { :mean n
                         ;      :median n
                         ;      :std-dev n
-                        ;      :count n
+                        ;      :size n
                         ;      :75th-percentile n
                         ;      :95th-percentile n
                         ;      :98th-percentile n
@@ -164,7 +164,11 @@ To expose the rates of events, meters support the `rates` function as well as th
 
 ```clojure
 (value my-meter) ; => the number of events marked
-(rates my-meter) ; => the current mean, 1-minute, 5-minute, and 15-minute event rates
+(rates my-meter) ; =>  { :count n
+                 ;       :mean-rate n
+                 ;       :1-minute-rate n
+                 ;       :5-minute-rate n
+                 ;       :15-minute-rate n }
 ```
 
 ### Timer
