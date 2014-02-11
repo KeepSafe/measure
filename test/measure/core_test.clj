@@ -120,11 +120,11 @@
           c (start-timing t)]
       (is (instance? java.io.Closeable c))))
 
-  (testing "start-timing's handle, when closed, updates the timer"
+  (testing "stop-timing, given the handle returne dfrom start-timing, updates the timer"
     (let [t (timer (registry) "egg")
           c (start-timing t)]
       (is (= 0 (value t)))
-      (.close c)
+      (stop-timing c)
       (is (= 1 (value t)))))
 
   (testing "with-timer executes a list of expressions and times the total execution time."

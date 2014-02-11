@@ -33,7 +33,8 @@
                                  RatioGauge
                                  RatioGauge$Ratio
                                  Sampling
-                                 Timer])
+                                 Timer
+                                 Timer$Context])
   (:import [com.codahale.metrics.graphite Graphite
                                           GraphiteReporter]))
 
@@ -205,13 +206,32 @@
   [^Timer t f]
   (fn [& args] (time! t #(apply f args))))
 
+;; Operations occasionally cross thread boundaries, and even more frequently
+;; cross lexical scopes; the `start-timing` function is useful in these cases.
+;; It returns a handle that implements <code>java.io.Closeable</code> which,
+;; when closed (either with <code>(.close handle)</code> or the companion
+;; `stop-timing` function) will complete the timing.  Just like your stopwatch.
+
 (defn start-timing
-  "Begins timing and returns a handle with which to stop timing.
+  "Begins timing and returns a handle with which to stop timing.  Stop timing
+   with the `stop-timing` function.
 
    Typically you would use `with-timer`; for cases where you cannot,
    e.g. when using a non-closure callback, this is appropriate."
   [^Timer t]
   (.time t))
+
+(defn stop-timing
+  "Stops timing for the given handle."
+  [^Timer$Context timing-handle]
+  (.stop timing-handle))
+
+;; More frequently, your timing can be declarative:
+;;
+;;<pre><code>(with-timer my-timer
+;;  (println "Beginning to compute the 100,000th prime")
+;;  (nth-prime 100000)
+;;  (println "Finished"))</code></pre>
 
 (defmacro with-timer
   "Times the given body of code with the given timer."
