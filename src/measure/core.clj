@@ -20,7 +20,6 @@
 ;; simple counters to exponentially-decaying histograms.
 
 (ns measure.core
-  {}
   (:import [java.net InetSocketAddress])
   (:import [java.util.concurrent TimeUnit])
   (:import [com.codahale.metrics ConsoleReporter
@@ -206,10 +205,18 @@
   [^Timer t f]
   (fn [& args] (time! t #(apply f args))))
 
+(defn start-timing
+  "Begins timing and returns a handle with which to stop timing.
+
+   Typically you would use `with-timer`; for cases where you cannot,
+   e.g. when using a non-closure callback, this is appropriate."
+  [^Timer t]
+  (.time t))
+
 (defmacro with-timer
   "Times the given body of code with the given timer."
   [^Timer timer & forms]
-  `(with-open [t# (.time ~timer)]
+  `(with-open [t# (start-timing ~timer)]
      ~@forms))
 
 ;; Both timers and histograms expose methods named 'update'

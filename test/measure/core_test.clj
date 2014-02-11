@@ -115,6 +115,18 @@
       (tf)
       (is (= 1 (value t)))))
 
+  (testing "start-timing returns a closeable handle"
+    (let [t (timer (registry) "blah")
+          c (start-timing t)]
+      (is (instance? java.io.Closeable c))))
+
+  (testing "start-timing's handle, when closed, updates the timer"
+    (let [t (timer (registry) "egg")
+          c (start-timing t)]
+      (is (= 0 (value t)))
+      (.close c)
+      (is (= 1 (value t)))))
+
   (testing "with-timer executes a list of expressions and times the total execution time."
     (let [t (timer (registry) "baz")
           fact (fn [n acc]
