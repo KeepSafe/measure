@@ -13,7 +13,7 @@ Add this to your Leiningen project's dependencies:
 
 Then, measure all the things:
 
-```
+```clojure
 (require '[measure.core :refer [registry meter timer mark update with-timer]])
 
 ;; All metrics live in a registry; you'll want to have one of these somewhere.
@@ -50,7 +50,7 @@ Measurements come in several different kinds - Gauge, Counter, Meter, Histogram,
 
 A gauge is a simple instantaneous reading of a stateful value, such as current heap size.
 
-```
+```clojure
 (def some-state (atom 0))
 
 (def state-gauge (gauge metrics "state.atom" some-state))
@@ -58,13 +58,13 @@ A gauge is a simple instantaneous reading of a stateful value, such as current h
 
 A gauge can also be created with an arbitrary function:
 
-```
+```clojure
 (def fn-gauge (gauge metrics "not.very.useful" #(rand)))
 ```
 
 The value of a gauge can be obtained with the standard `value` function:
 
-```
+```clojure
 (value my-gauge) ; => the gauge's current value
 ```
 
@@ -72,7 +72,7 @@ The value of a gauge can be obtained with the standard `value` function:
 
 A ratio gauge is a gauge that measures the ratio of two numbers.  These numbers are provided by numerator and denominator atoms-or-fns.
 
-```
+```clojure
 (def cache-hits (counter metrics "cache.hits"))
 (def cache-accesses (counter metrics "cache.accesses"))
 
@@ -84,7 +84,7 @@ A ratio gauge is a gauge that measures the ratio of two numbers.  These numbers 
 
 A derived gauge is a gauge on the value of another gauge, with a transformation function applied.
 
-```
+```clojure
 (def memcache-connections-gauge (gauge metrics "memcache.connections" connections-atom))
 
 (def memcache-conn-count-gauge
@@ -96,7 +96,7 @@ A derived gauge is a gauge on the value of another gauge, with a transformation 
 
 A counter is a gauge over an integer, and can be incremented or decremented.
 
-```
+```clojure
 (def queue-length (counter metrics "queue.length"))
 
 (defn enqueue
@@ -112,7 +112,7 @@ A counter is a gauge over an integer, and can be incremented or decremented.
 
 Counter values can be obtained with the standard `value` function:
 
-```
+```clojure
 (value my-counter) ; => the counter's current value
 ```
 
@@ -120,7 +120,7 @@ Counter values can be obtained with the standard `value` function:
 
 A histogram measures the distribution of numerical events over time.  They can identify not only the mean and median of a set, but also quantiles e.g. the 95th percentile.
 
-```
+```clojure
 (def response-sizes (histogram metrics "response.size"))
 
 (defn measuring-response-sizes
@@ -133,7 +133,7 @@ A histogram measures the distribution of numerical events over time.  They can i
 
 To expose the sampled distribution recorded, histograms support the `snapshot` function as well as the standard `value` function:
 
-```
+```clojure
 (value my-histogram) ; => the number of events sampled
 (snapshot my-histogram) ; => { :mean n
                         ;      :median n
@@ -150,7 +150,7 @@ To expose the sampled distribution recorded, histograms support the `snapshot` f
 
 A meter measures the rate at which events occur.
 
-```
+```clojure
 (def successful-authorization (meter metrics "auth.successful"))
 
 (defn authorize!
@@ -162,7 +162,7 @@ A meter measures the rate at which events occur.
 
 To expose the rates of events, meters support the `rates` function as well as the standard `value` function:
 
-```
+```clojure
 (value my-meter) ; => the number of events marked
 (rates my-meter) ; => the current mean, 1-minute, 5-minute, and 15-minute event rates
 ```
@@ -171,7 +171,7 @@ To expose the rates of events, meters support the `rates` function as well as th
 
 A timer acts as a combination of meter and histogram, marking the rate of events as well as the distribution of their durations.
 
-```
+```clojure
 (def request-times (timer metrics "request.duration"))
 
 (defn measuring-response-times
@@ -193,7 +193,7 @@ A timer acts as a combination of meter and histogram, marking the rate of events
 
 As both a meter and a histogram, timers support the `value`, `rate`, and `snapshot` functions:
 
-```
+```clojure
 (value my-timer) ; => the number of events recorded
 
 (rates my-timer) ; => the 1-, 5-, and 15-minute rates of the events recorded
@@ -210,7 +210,7 @@ For measurements to be useful, they need to be visible.  Measurements reflect on
 
 For measuring during development, measurements can be printed to the console.
 
-```
+```clojure
 ;; This will print the current value of the registry to the console every 5 seconds
 (report-to-console! metrics :frequency 5 :frequency-unit :seconds)
 ```
@@ -221,7 +221,7 @@ In production, the console is not a practical place to send measurements.  A mor
 
 Installing and operating a Graphite server can be tricky, but feeding your measurements to it is simple.
 
-```
+```clojure
 (report-to-graphite! metrics
   :host "graphite.mydomain.com"
   :port 2003                      ;; :port defaults to 2003
