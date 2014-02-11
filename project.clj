@@ -1,6 +1,8 @@
 (defproject measure "0.1.0-SNAPSHOT"
   :description "Say things about your application with authority, using Coda Hale's Metrics."
   :url "https://github.com/benjamin-bader/measure"
+  :scm {:name "git"
+        :url "https://github.com/benjamin-bader/measure"}
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
