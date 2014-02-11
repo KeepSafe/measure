@@ -4,4 +4,3 @@ script: lein2 test
 jdk:
   - oraclejdk7
   - openjdk6
-
