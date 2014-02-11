@@ -221,8 +221,8 @@
   (update [hist ^Integer count] (.update hist count))
 
   Timer
-  (update [t ^Integer millis]
-    (->> millis (.toNanos TimeUnit/MILLISECONDS) (.update t))))
+  (update [t millis]
+    (.update t millis TimeUnit/MILLISECONDS)))
 
 ;; The five metric types each expose a scalar value, which depending on the specific
 ;; type of metric is more or less useful.  Gauges and counters are of course simply
@@ -304,12 +304,12 @@
    * :rate-unit - A time unit (:seconds, :millis, :nanos) to which to convert all rates."
   [^MetricRegistry registry & {:keys [rate-unit time-unit frequency frequency-unit]
                                 :or {frequency 1
-                                     time-unit :minutes}}]
+                                     frequency-unit :minutes}}]
   (let [builder (cond-> (ConsoleReporter/forRegistry registry)
                         rate-unit (.convertRatesTo (keyword-to-timeunit rate-unit))
                         time-unit (.convertDurationsTo (keyword-to-timeunit time-unit)))
         reporter (.build builder)]
-    (.start reporter )))
+    (.start reporter frequency frequency-unit)))
 
 ;; ### Graphite Reporting
 ;;
@@ -331,17 +331,12 @@
    * :time-unit - A time unit (:seconds, :millis, :nanos) to which to convert all durations.
    * :frequency - How much time should pass between submissions; defaults to 1.
    * :frequency-unit - A time unit (:seconds, :millis, :nanos) describing the unit of :frequency; defaults to :seconds."
-  [^MetricRegistry registry host & options]
-  (let [{:keys [port
-                prefix
-                rate-unit
-                time-unit
-                frequency
-                frequency-unit]
+  [^MetricRegistry registry ^String host & options]
+  (let [{:keys [port prefix rate-unit time-unit frequency frequency-unit]
          :or {port 2003
               frequency 5
               frequency-unit :seconds}} options
-        socket-addr (InetSocketAddress. host port)
+        socket-addr (InetSocketAddress. host (int port))
         graphite (Graphite. socket-addr)
         builder (cond-> (GraphiteReporter/forRegistry registry)
                         prefix (.prefixedWith prefix)
