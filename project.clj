@@ -3,8 +3,8 @@
   :url "https://github.com/benjamin-bader/measure"
   :scm {:name "git"
         :url "https://github.com/benjamin-bader/measure"}
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :license {:name "Apache License, Version 2.0"
+            :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [com.codahale.metrics/metrics-core "3.0.1"]
                  [com.codahale.metrics/metrics-graphite "3.0.1"]]

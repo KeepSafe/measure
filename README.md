@@ -231,9 +231,8 @@ Installing and operating a Graphite server can be tricky, but feeding your measu
 
 ## License
 
-Copyright © 2014 Ben Bader
+Copyright © 2014 KeepSafe Software, Inc
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Distributed under the Apache License, Version 2.0.
 
 [0]: http://metrics.codahale.com/
