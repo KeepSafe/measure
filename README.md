@@ -8,7 +8,7 @@ You can't optimize what you don't measure; `measure` makes it easy to know what 
 
 Add this to your Leiningen project's dependencies:
 ```clojure
-[measure "0.1.3"]
+[measure "0.1.4-SNAPSHOT"]
 ```
 
 Then, measure all the things:
@@ -216,7 +216,9 @@ For measuring during development, measurements can be printed to the console.
 
 ```clojure
 ;; This will print the current value of the registry to the console every 5 seconds
-(report-to-console! metrics :frequency 5 :frequency-unit :seconds)
+(def reporter (console-reporter metrics :frequency 5 :frequency-unit :seconds))
+
+(start! reporter)
 ```
 
 ### Graphite Reporting
@@ -226,11 +228,27 @@ In production, the console is not a practical place to send measurements.  A mor
 Installing and operating a Graphite server can be tricky, but feeding your measurements to it is simple.
 
 ```clojure
-(report-to-graphite! metrics
-  :host "graphite.mydomain.com"
-  :port 2003                      ;; :port defaults to 2003
-  :frequency 5                    ;; :frequency defaults to 5
-  :frequency-unit :seconds)       ;; :frequency-unit defaults to :seconds
+(def reporter
+  (graphite-reporter metrics
+                     :host "graphite.mydomain.com"
+                     :port 2003                      ;; :port defaults to 2003
+                     :frequency 5                    ;; :frequency defaults to 5
+                     :frequency-unit :seconds)       ;; :frequency-unit defaults to :seconds
+
+(start! reporter)
+```
+
+### Stop Reporting
+
+Measurement reporters all implement `java.io.Closeable`, and so can be closed in the usual ways.  A method `stop!` is also provided:
+
+```clojure
+
+(with-open [r (console-reporter ...)]
+  ;; code code code
+  )
+
+(stop! my-graphite-reporter)
 ```
 
 ## License

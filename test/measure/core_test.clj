@@ -15,7 +15,8 @@
 (ns measure.core-test
   (:require [clojure.test :refer :all]
             [measure.core :refer :all])
-  (:import [java.util.concurrent TimeUnit]))
+  (:import [java.util.concurrent TimeUnit]
+           [com.codahale.metrics MetricRegistry]))
 
 (defn contains-key?
   [registry name]
@@ -23,7 +24,58 @@
 
 (deftest registry-test
   (testing "Creating a new registry does what you think it does"
-    (is (not (nil? (registry))))))
+    (is (not (nil? (registry))))
+    (is (instance? MetricRegistry (registry)))))
+
+(deftest gauges
+  (testing "Creating a gauge registers it"
+    (let [r (registry)
+          c (gauge r "time" #(System/currentTimeMillis))]
+      (is (contains-key? r "time"))))
+
+  (testing "Reading a fn-gauge invokes the fn"
+    (let [r (registry)
+          ctr (atom 0)
+          g (gauge r "counter" #(swap! ctr inc))]
+      (value g)
+      (value g)
+      (is (= 2 @ctr))))
+
+  (testing "Reating an atom-gauge reads from the atom"
+    (let [r (registry)
+          a (atom :foo)
+          g (gauge r "atom" a)]
+      (is (= :foo (value g)))))
+
+  (testing "Creating a derived gauge registers it"
+    (let [r (registry)
+          g (gauge r "time" #(System/currentTimeMillis))
+          dg (derive-gauge r "time-str" g str)]
+      (is (contains-key? r "time-str"))))
+
+  (testing "Reading a derived gauge reads the underlying gauge"
+    (let [r (registry)
+          a (atom 0)
+          g (gauge r "atom" #(swap! a inc))
+          dg (derive-gauge r "atom-str" g str)]
+      (value dg)
+      (is (= 1 @a))))
+
+  (testing "Reading a derived gauge applies the transformation to the underlying value"
+    (let [r (registry)
+          g (gauge r "atom" (atom 1))
+          dg (derive-gauge r "atom-str" g str)]
+      (is (= "1" (value dg)))))
+
+  (testing "Creating a ratio gauge registers it"
+    (let [r (registry)
+          g (ratio r "half" #(1) #(2))]
+      (is (contains-key? r "half"))))
+
+  (testing "The value of a ratio gauge is the result of its numerator fn divided by its denominator fn"
+    (let [r (registry)
+          g (ratio r "half" (fn [] 1) (fn [] 2))] ;; For some reason, #(1) and #(2) causes a ClassCastException
+      (is (= 0.5 (value g))))))
 
 (deftest counters
   (testing "Creating a counter registers it"
@@ -187,27 +239,12 @@
                  :15-minute-rate}]
         (is (empty? (filter (comp not ks) (keys r))))))))
 
-(deftest atom?-test
-  (testing "Returns true when argument is an atom"
-    (is (atom? (atom :foo))))
-
-  (testing "Returns false when argument is not an atom"
-    (is (not (atom? :foo)))))
-
-(deftest kw-to-timeunit-test
-  (testing "Handles :minutes"
-    (is (= TimeUnit/MINUTES (keyword-to-timeunit :minutes))))
-
-  (testing "Handles :seconds"
-    (is (= TimeUnit/SECONDS (keyword-to-timeunit :seconds))))
-
-  (testing "Handles :millis"
-    (is (= TimeUnit/MILLISECONDS (keyword-to-timeunit :millis))))
-
-  (testing "Handles :nanos"
-    (is (= TimeUnit/NANOSECONDS (keyword-to-timeunit :nanos))))
-
-  (testing "Blows up on any other input"
-    (is (thrown? IllegalArgumentException (keyword-to-timeunit "minutes")))))
-
-;; TODO: Implement reporter tests
+(deftest console-reporting
+  (testing "can handle :minutes, :seconds, :millis, and :nanos"
+    (let [r (registry)]
+      (console-reporter r :rate-unit :minutes)
+      (console-reporter r :rate-unit :seconds)
+      (console-reporter r :rate-unit :millis)
+      (console-reporter r :rate-unit :nanos)
+      (try (console-reporter r :rate-unit :hours)
+           (catch IllegalArgumentException e)))))

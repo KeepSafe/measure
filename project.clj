@@ -1,4 +1,4 @@
-(defproject measure "0.1.3"
+(defproject measure "0.1.4-SNAPSHOT"
   :description "Say things about your application with authority, using Coda Hale's Metrics."
   :url "https://github.com/KeepSafe/measure"
   :scm {:name "git"
@@ -10,7 +10,8 @@
                  [com.codahale.metrics/metrics-graphite "3.0.1"]]
 
   :profiles {:dev {:plugins [[com.jakemccrary/lein-test-refresh "0.3.4"]
-                             [lein-marginalia "0.7.1"]]}}
+                             [lein-marginalia "0.8.0-SNAPSHOT"]]
+                   :dependencies [[org.slf4j/slf4j-simple "1.7.5"]]}}
 
   :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
