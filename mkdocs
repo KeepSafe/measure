@@ -1,0 +1,7 @@
+#! /bin/bash
+
+git checkout gh-pages
+lein marg -d . -f index.html
+git add index.html
+git commit
+git checkout -
