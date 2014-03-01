@@ -1,6 +1,7 @@
 #! /bin/bash
 
 git checkout gh-pages
+git rebase master
 lein marg -d . -f index.html
 git add index.html
 git commit
