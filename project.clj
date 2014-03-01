@@ -1,6 +1,6 @@
-(defproject measure "0.1.4"
-  :description "Say things about your application with authority, using [Coda Hale's Metrics](http://metrics.codahale.com)."
-  :url "https://measure.getkeepsafe.com"
+(defproject measure "0.1.5"
+  :description "Say things about your application with authority, using Coda Hale's Metrics."
+  :url "http://measure.getkeepsafe.com"
   :scm {:name "git"
         :url "https://github.com/KeepSafe/measure"}
   :license {:name "Apache License, Version 2.0"

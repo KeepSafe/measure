@@ -10,7 +10,7 @@ You can't optimize what you don't measure; `measure` makes it easy to know what 
 
 Add this to your Leiningen project's dependencies:
 ```clojure
-[measure "0.1.4-SNAPSHOT"]
+[measure "0.1.5"]
 ```
 
 Then, measure all the things:
