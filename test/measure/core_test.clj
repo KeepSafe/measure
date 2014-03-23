@@ -219,7 +219,7 @@
         (time! t (fn [] :foo)))
       (is (= (value t) (.getCount t))))))
 
-(deftest snapshots
+(deftest histogram-snapshots
   (let [h (histogram (registry) "snap")
         _ (update h 100)
         s (snapshot h)]
@@ -229,15 +229,28 @@
                  :99th-percentile :999th-percentile}]
         (is (empty? (filter (comp not ks) (keys s))))))))
 
+(deftest timer-snapshots
+  (let [t (timer (registry) "snap")
+        _ (time! t (fn [] :foo))
+        s (snapshot t :seconds)]
+    (testing "snapshot has all specified keys"
+      (let [ks #{:size :min :max :mean :median :std-dev
+                 :75th-percentile :95th-percentile :98th-percentile
+                 :99th-percentile :999th-percentile
+                 :duration-units}]
+        (is (empty? (filter (comp not ks) (keys s))))))))
+
 (deftest metered-rates
   (let [m (meter (registry) "metered")
         _ (doseq [n (range 1000)]
             (mark m))
-        r (rates m)]
+        r1 (rates m)
+        r2 (rates m :minutes)]
     (testing "rates have all specified keys"
       (let [ks #{:count :mean-rate :1-minute-rate :5-minute-rate
-                 :15-minute-rate}]
-        (is (empty? (filter (comp not ks) (keys r))))))))
+                 :15-minute-rate :rate-units}]
+        (is (empty? (filter (comp not ks) (keys r1))))
+        (is (empty? (filter (comp not ks) (keys r2))))))))
 
 (deftest console-reporting
   (testing "can handle :minutes, :seconds, :millis, and :nanos"

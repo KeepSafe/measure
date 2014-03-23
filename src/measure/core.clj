@@ -66,9 +66,12 @@
 (defn- ^TimeUnit keyword-to-timeunit
   [kw]
   (case kw
+    :days    TimeUnit/DAYS
+    :hours   TimeUnit/HOURS
     :minutes TimeUnit/MINUTES
     :seconds TimeUnit/SECONDS
     :millis  TimeUnit/MILLISECONDS
+    :micros  TimeUnit/MICROSECONDS
     :nanos   TimeUnit/NANOSECONDS))
 
 (defn gauge
@@ -297,30 +300,65 @@
   [^Metered meter-or-timer]
   (.getFifteenMinuteRate meter-or-timer))
 
+(defn- ^TimeUnit unit-to-timeunit
+  [unit]
+  (cond
+   (instance? TimeUnit unit) unit
+   (keyword? unit) (keyword-to-timeunit unit)
+   :else (throw (IllegalArgumentException. "Expected TimeUnit or keyword!"))))
+
+(defn- mk-units-str
+  [^TimeUnit unit ^String name]
+  (let [s (clojure.string/lower-case (str unit))]
+   (str name
+        "/"
+        (subs s 0 (- (count s) 1)))))
+
 (defn rates
   "Gets the current rate of events for the given measurement."
-  [^Metered meter-or-timer]
-  {:count (.getCount meter-or-timer)
-   :15-minute-rate (fifteen-minute-rate meter-or-timer)
-   :5-minute-rate (five-minute-rate meter-or-timer)
-   :1-minute-rate (one-minute-rate meter-or-timer)
-   :mean-rate (mean-rate meter-or-timer)})
+  ([^Metered meter-or-timer]
+     (rates meter-or-timer TimeUnit/SECONDS))
+  ([^Metered meter-or-timer unit]
+     (let [u (unit-to-timeunit unit)
+           factor (.toSeconds u 1)]
+      {:count (.getCount meter-or-timer)
+       :15-minute-rate (* factor (fifteen-minute-rate meter-or-timer))
+       :5-minute-rate (* factor (five-minute-rate meter-or-timer))
+       :1-minute-rate (* factor (one-minute-rate meter-or-timer))
+       :mean-rate (* factor (mean-rate meter-or-timer))
+       :rate-units (mk-units-str u "events")})))
 
 (defn snapshot
   "Gets a snapshot of the current distribution for the given measurement."
-  [^Sampling histogram-or-timer]
-  (let [s (.getSnapshot histogram-or-timer)]
-    {:size (.size s)
-     :min (.getMin s)
-     :max (.getMax s)
-     :mean (.getMean s)
-     :std-dev (.getStdDev s)
-     :median (.getMedian s)
-     :75th-percentile (.get75thPercentile s)
-     :95th-percentile (.get95thPercentile s)
-     :98th-percentile (.get98thPercentile s)
-     :99th-percentile (.get99thPercentile s)
-     :999th-percentile (.get999thPercentile s)}))
+  ([^Sampling histogram-or-timer]
+     (let [s (.getSnapshot histogram-or-timer)]
+       {:size (.size s)
+        :min (.getMin s)
+        :max (.getMax s)
+        :mean (.getMean s)
+        :std-dev (.getStdDev s)
+        :median (.getMedian s)
+        :75th-percentile (.get75thPercentile s)
+        :95th-percentile (.get95thPercentile s)
+        :98th-percentile (.get98thPercentile s)
+        :99th-percentile (.get99thPercentile s)
+        :999th-percentile (.get999thPercentile s)}))
+  ([^Timer timer unit]
+     (let [s (.getSnapshot timer)
+           u (unit-to-timeunit unit)
+           factor (/ 1.0 (.toNanos u 1))]
+       {:size (.size s)
+        :min (* factor (.getMin s))
+        :max (* factor (.getMax s))
+        :mean (* factor (.getMean s))
+        :std-dev (* factor (.getStdDev s))
+        :median (* factor (.getMedian s))
+        :75th-percentile (* factor (.get75thPercentile s))
+        :95th-percentile (* factor (.get95thPercentile s))
+        :98th-percentile (* factor (.get98thPercentile s))
+        :99th-percentile (* factor (.get99thPercentile s))
+        :999th-percentile (* factor (.get999thPercentile s))
+        :duration-units (mk-units-str u "calls")})))
 
 (defprotocol MeasurementReporter
   "## Reporting
