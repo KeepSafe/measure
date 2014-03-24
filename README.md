@@ -10,7 +10,7 @@ You can't optimize what you don't measure; `measure` makes it easy to know what 
 
 Add this to your Leiningen project's dependencies:
 ```clojure
-[measure "0.1.5"]
+[measure "0.1.6-SNAPSHOT"]
 ```
 
 Then, measure all the things:
@@ -251,6 +251,34 @@ Measurement reporters all implement `java.io.Closeable`, and so can be closed in
   )
 
 (stop! my-graphite-reporter)
+```
+
+## Ring Measurements
+
+One of the most prominent uses of Clojure is Ring web applications.  Measure includes middleware to take common measurements, including rates of HTTP request methods and status codes and a distribution of request body sizes.
+
+Ring measurements include:
+
+- `requests.gets`
+- `requests.posts`
+- `requests.puts`
+- `requests.deletes`
+- `requests.heads`
+- `requests.options`
+- `responses.1XX`
+- `responses.2XX`
+- `responses.3XX`
+- `responses.4XX`
+- `responses.5XX`
+
+```clojure
+(use 'measure.ring)
+
+(defn app
+  [registry]
+  (-> (define-routes)
+      (other-middleware)
+      (with-measurements registry)))
 ```
 
 ## License
