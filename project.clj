@@ -1,4 +1,4 @@
-(defproject measure "0.1.5"
+(defproject measure "0.1.6-SNAPSHOT"
   :description "Say things about your application with authority, using Coda Hale's Metrics."
   :url "http://measure.getkeepsafe.com"
   :scm {:name "git"
