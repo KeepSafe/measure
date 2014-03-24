@@ -115,10 +115,6 @@
             (getRatio [] (RatioGauge$Ratio/of (n-fn) (d-fn))))]
     (register registry name r)))
 
-;; ### Derived Gauge
-;;
-;; A derived gauge yields the value of a source gauge, to which a
-;; transformation is applied.  
 (defn derive-gauge
   "### Derived Gauge
 
@@ -164,8 +160,6 @@
   [^MetricRegistry registry ^String name]
   (.histogram registry name))
 
-
-
 (defn meter
   "## Meters
 
@@ -204,8 +198,6 @@
   "Wraps the given function such that each invocation is timed by the given timer."
   [^Timer t f]
   (fn [& args] (time! t #(apply f args))))
-
-
 
 (defn start-timing
   "Operations occasionally cross thread boundaries, and even more frequently
@@ -254,7 +246,6 @@
 
 (defprotocol SingleValuedMetric
   "The five metric types each expose a scalar value, which depending on the specific
-
    type of metric is more or less useful.  Gauges and counters are of course simply
    measures of one scalar value, and so their value is the entirety of their information.
 
