@@ -4,7 +4,7 @@ Measure is a library that enables Clojure programs to track all aspects of their
 
 You can't optimize what you don't measure; `measure` makes it easy to know what needs optimizing.
 
-[![Build Status](https://travis-ci.org/KeepSafe/measure.png?branch=master)](https://travis-ci.org/KeepSafe/measure)
+[![Build Status](https://travis-ci.org/KeepSafe/measure.svg?branch=master)](https://travis-ci.org/KeepSafe/measure)
 
 ## Usage
 
