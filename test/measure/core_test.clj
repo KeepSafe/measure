@@ -121,8 +121,9 @@
     (let [h (histogram (registry) "foo")]
       (doseq [n (range 1 11)] ; numbers 1-10, inclusive
         (update h n))
+      (is (= (.. h (getSnapshot) (size)) 10))
       (is (= (.. h (getSnapshot) (getValue 0.0)) 1.0))
-      (is (= (.. h (getSnapshot) (getValue 0.5)) 5.5))
+      (is (= (.. h (getSnapshot) (getValue 0.5)) 6.0))
       (is (= (.. h (getSnapshot) (getValue 1.0)) 10.0)))))
 
 (deftest meters
