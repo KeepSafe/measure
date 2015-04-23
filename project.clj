@@ -25,8 +25,6 @@
                         ["snapshots" {:url "https://oss.sonatype.org/content/repositories/snapshots/"
                                       :creds :gpg}]]
 
-  :scm {:url "git@github.com:KeepSafe/measure.git"}
-
   :pom-addition [:developers [:developer
                               [:name "Ben Bader"]
                               [:url "http://getkeepsafe.com"]
