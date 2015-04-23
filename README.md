@@ -10,7 +10,7 @@ You can't optimize what you don't measure; `measure` makes it easy to know what 
 
 Add this to your Leiningen project's dependencies:
 ```clojure
-[measure "0.1.7"]
+[com.getkeepsafe/measure "0.1.8"]
 ```
 
 Then, measure all the things:
@@ -283,7 +283,7 @@ Ring measurements include:
 
 ## License
 
-Copyright © 2014 KeepSafe Software, Inc
+Copyright © 2014-2015 KeepSafe Software, Inc
 
 Distributed under the Apache License, Version 2.0.
 
