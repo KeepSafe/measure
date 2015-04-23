@@ -1,4 +1,4 @@
-(defproject measure "0.1.7"
+(defproject com.getkeepsafe/measure "0.1.8-SNAPSHOT"
   :description "Say things about your application with authority, using Coda Hale's Metrics."
   :url "http://measure.getkeepsafe.com"
   :scm {:name "git"
@@ -19,7 +19,13 @@
 
   :signing {:gpg-key "ben@getkeepsafe.com"}
 
-  :deploy-repositories [["clojars" {:creds :gpg}]]
+  :deploy-repositories [["clojars" {:creds :gpg}]
+                        ["releases" {:url "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                                     :creds :gpg}]
+                        ["snapshots" {:url "https://oss.sonatype.org/content/repositories/snapshots/"
+                                      :creds :gpg}]]
+
+  :scm {:url "git@github.com:KeepSafe/measure.git"}
 
   :pom-addition [:developers [:developer
                               [:name "Ben Bader"]
